@@ -21,7 +21,7 @@
       login_tenant_name: "{{ os_tenant }}"
       name: centos 
       image_name: centos-7-x86_64-genericcloud
-      key_name: "{{ os_keyname }}"
+      key_name: "{{ os_key_name }}"
       wait_for: 200
       flavor_id: "{{ os_flavor_id }}"
       nics:
