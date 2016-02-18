@@ -26,14 +26,13 @@
       flavor_id: "{{ os_flavor_id }}"
       nics:
         - net-id: "{{ os_network_id }}"
-      auto_floating_ip: yes
       meta:
         hostname: centos.openstacklocal
     register: nova
 
   - name: Add CentOS Instance to Inventory
     add_host: name=centos ansible_ssh_user=centos
-              ansible_ssh_host={{ nova.public_ip[0] }} 
+              ansible_ssh_host={{ nova.private_ip[0] }} 
               ansible_sudo
 
 - name: Ping new host
