@@ -22,7 +22,7 @@
       image_name: centos-7-x86_64-genericcloud
       key_name: "{{ os_username }}"
       wait_for: 200
-      flavor_id: ""{{ os_flavor_id }}"
+      flavor_id: "{{ os_flavor_id }}"
       nics:
         - net-id: "{{ os_network_id }}"
       auto_floating_ip
