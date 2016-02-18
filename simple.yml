@@ -40,7 +40,7 @@
               ansible_sudo
 
 - name: Ping new host
-  hosts: centos
+  hosts: "{{ instance_name }}"
   
   tasks:
   - ping:
