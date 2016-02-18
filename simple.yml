@@ -3,6 +3,7 @@
   hosts: localhost
   gather_facts: False
   vars:
+    instance_name: centos
     os_keystone_url: http://127.0.0.1:5000/v2.0/
     os_username: demo
     os_password: secret
@@ -19,7 +20,7 @@
       login_username: "{{ os_username }}"
       login_password: "{{ os_password }}"
       login_tenant_name: "{{ os_tenant }}"
-      name: centos 
+      name: "{{ instance_name }}"
       image_name: centos-7-x86_64-genericcloud
       key_name: "{{ os_key_name }}"
       wait_for: 200
@@ -27,14 +28,14 @@
       nics:
         - net-id: "{{ os_network_id }}"
       meta:
-        hostname: centos.openstacklocal
+        hostname: "{{ instance_name }}.openstacklocal"
     register: nova
   
   - name: Wait for Host to be Available
     wait_for: host={{ nova.private_ip[0] }} port=22 delay=10
   
   - name: Add CentOS Instance to Inventory
-    add_host: name=centos ansible_ssh_user=centos
+    add_host: name="{{ instance_name }}" ansible_ssh_user=centos
               ansible_ssh_host={{ nova.private_ip[0] }} 
               ansible_sudo
 
