@@ -1,0 +1,42 @@
+---
+- name: Simple OpenStack Deployment Example
+  hosts: localhost
+  gather_facts: False
+  vars:
+    os_keystone_url: http://127.0.0.1:5000/v2.0/
+    os_username: demo
+    os_password: secret
+    os_tenant: demo
+    os_network_id: 515c7188-1091-4d9e-a43b-ab2c6a4401a6
+    os_flavor_id: 2
+  
+  tasks:
+  - name: Launch CentOS Instance
+    nova_compute:
+      state: present
+      auth_url: "{{ os_keystone_url }}"
+      login_username: "{{ os_username }}"
+      login_password: "{{ os_password }}"
+      login_tenant_name: "{{ os_tenant }}"
+      name: centos 
+      image_name: centos-7-x86_64-genericcloud
+      key_name: "{{ os_username }}"
+      wait_for: 200
+      flavor_id: ""{{ os_flavor_id }}"
+      nics:
+        - net-id: "{{ os_network_id }}"
+      auto_floating_ip
+      meta:
+        hostname: centos.openstacklocal
+    register: nova
+
+  - name: Add CentOS Instance to Inventory
+    add_host: name=centos ansible_ssh_user=centos
+              ansible_ssh_host={{ nova.public_ip[0] }} 
+              ansible_sudo
+
+- name: Ping new host
+  hosts: centos
+  
+  tasks:
+  - ping:
