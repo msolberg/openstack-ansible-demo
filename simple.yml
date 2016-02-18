@@ -25,7 +25,7 @@
       flavor_id: "{{ os_flavor_id }}"
       nics:
         - net-id: "{{ os_network_id }}"
-      auto_floating_ip
+      auto_floating_ip: yes
       meta:
         hostname: centos.openstacklocal
     register: nova
