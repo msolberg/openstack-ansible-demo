@@ -1,0 +1,23 @@
+---
+- name: Deploy on OpenStack
+  hosts: localhost
+  gather_facts: false
+  tasks:
+  - name: Deploy an instance
+    nova_compute:
+      state: present
+      login_username: demo
+      login_password: secret
+      login_tenant_name: demo
+      auth_url: http://127.0.0.1:5000/v2.0/
+      name: webserver
+      image_name: centos-7-x86_64-genericcloud
+      key_name: root
+      wait_for: 200
+      flavor_id: 2
+      auto_floating_ip: yes
+      nics:
+        - net-id: fa6af4e6-c44e-439c-a91c-03bcae55e587
+      meta:
+        hostname: webserver.localdomain
+
