@@ -23,14 +23,14 @@
     register: nova
 
   - name: Add CentOS Instance to Inventory
-    add_host: name=webserver ansible_ssh_user=centos
+    add_host: name=webserver groups=webservers
               ansible_ssh_host={{ nova.public_ip[0] }} 
-              ansible_sudo=yes
   
-- name: Install httpd on Webserver
-  hosts: webserver
-  
+- hosts: webservers
+  remote_user: centos
+  sudo: yes
   tasks:
-  - name: install apache
-    yum: name=httpd state=latest
-
+    - name: ensure apache is at the latest version
+      yum: name=httpd state=latest
+    - name: make sure apache is running
+      service: name=httpd state=running
