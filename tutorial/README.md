@@ -1,4 +1,4 @@
-= Using Ansible to Launch Instances on OpenStack 
+# Using Ansible to Launch Instances on OpenStack 
 
 This is a short tutorial on how to deploy instances onto OpenStack
 clouds using Ansible.  It assumes familiarity with the [Ansible
@@ -9,7 +9,7 @@ goal of this tutorial is to launch and configure an instance on an
 OpenStack platform.  It assumes that the instance does not exist in
 the current inventory of the Ansible host.
 
-== Start simple.
+## Start simple.
 
 We'll begin with a simple playbook that has a single play - a
 simplified version of the webserver example in the Ansible Playbook
@@ -52,7 +52,7 @@ you've got your SSH keys configured correctly, the instance can access
 the Internet to download packages, you have connectivity to the
 instance, and so on.
 
-== Launching an Instance
+## Launching an Instance
 
 Next we'll launch an instance in an Ansible task.  We'll be using the
 `nova_compute` module available in Ansible 1.9.  Starting with Ansible
@@ -127,7 +127,7 @@ playbook multiple times will not launch multiple instances.  Also note
 that the instance can be terminated by changing the "state" attribute
 from "present" to "absent" and running the playbook.
 
-== Putting it all together.
+## Putting it all together.
 
 Now that we can launch an instance in OpenStack, the next logical step
 is to configure it.  First, we'll use the `add_host` module to add the
