@@ -26,7 +26,6 @@
       key_name: "{{ os_key_name }}"
       timeout: 200
       flavor: "{{ os_flavor_id }}"
-      auto_ip: "yes"
       floating_ip_pools: "vlan177"
       nics:
         - net-id: "{{ os_network_id }}"
