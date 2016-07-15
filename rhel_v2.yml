@@ -34,11 +34,11 @@
     register: nova
   
   - name: Wait for Host to be Available
-    wait_for: host={{ nova.public_ip }} port=22 delay=10
+    wait_for: host={{ server.public_v4 }} port=22 delay=10
   
   - name: Add CentOS Instance to Inventory
     add_host: name="{{ instance_name }}" ansible_ssh_user=cloud-user
-              ansible_ssh_host={{ nova.public_ip }} 
+              ansible_ssh_host={{ server.public_v4 }} 
               ansible_sudo
 
 - name: Ping new host
