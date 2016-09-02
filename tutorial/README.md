@@ -55,11 +55,9 @@ instance, and so on.
 ## Launching an Instance
 
 Next we'll launch an instance in an Ansible task.  We'll be using the
-`nova_compute` module available in Ansible 1.9.  Starting with Ansible
-2.0, this module has been deprecated in favor of the much improved
-os_server module.
+new `os_server` module available in Ansible 2.0.
 
-The following play demonstrates basic usage of the nova_compute module.
+The following play demonstrates basic usage of the os_server module.
 
 ```
 - name: Deploy on OpenStack
@@ -67,47 +65,48 @@ The following play demonstrates basic usage of the nova_compute module.
   gather_facts: false
   tasks:
   - name: Deploy an instance
-    nova_compute:
+    os_server:
       state: present
-      login_username: demo
-      login_password: secret
-      login_tenant_name: demo
-      auth_url: http://127.0.0.1:5000/v2.0/
       name: webserver
-      image_name: centos-7-x86_64-genericcloud
+      image: centos-7-x86_64-genericcloud
       key_name: root
-      wait_for: 200
-      flavor_id: 2
+      wait: yes
+      flavor: m1.small
       auto_floating_ip: yes
-      nics:
-        - net-id: fa6af4e6-c44e-439c-a91c-03bcae55e587
+      network: private
       meta:
         hostname: webserver.localdomain
 ```
 
 There are a couple of things to note with this example.  The first is
-that every task in Ansible needs to run on some host.  The `nova_compute`
+that every task in Ansible needs to run on some host.  The `os_server`
 task is typically a "local action", but doesn't have to be.  Whichever
-machine you're going to run the task on needs to have the Python Nova
-Client library installed (`python-novaclient` on Red Hat
-distributions).  Second, we're turning off fact gathering.  This also
-isn't necessary, but speeds up the execution quite a bit.  Also
-consider specifying that your connection to localhost is local with a
-line like the following in your ansible hosts file:
+machine you're going to run the task on needs to have the Python Shade
+library installed (https://pypi.python.org/pypi/shade).  Second, we're
+turning off fact gathering.  This also isn't necessary, but speeds up
+the execution quite a bit.  Also consider specifying that your
+connection to localhost is local with a line like the following in
+your ansible hosts file:
 
 ```
 localhost        ansible_connection=local
 ```
 
 The task itself is pretty simple.  It contains all of the variables
-that you would expect to specify to launch an instance.  Edit them to
-match your environment and run the playbook with the following command.
+that you would expect to specify to launch an instance. Before we edit
+and run the playbook, we'll need to source in an OpenStack RC file
+which contains the authentication information for our user and
+tenant. This RC file can be downloaded from Horizon under the "Access
+& Security" tab, if you don't already have one.
+
+Once we've sourced in the OpenStack RC file, we'll edit the playbook to match our environment and then we'll run the playbook like so:
 
 ```
-ansible-playbook openstack_deploy.yaml
+$ . ./openrc.sh
+$ ansible-playbook openstack_deploy.yaml
 ```
 
-Assuming that you've specified the correct network ID, image name, key
+Assuming that you've specified the correct network name, image name, key
 name, and so on, you should see the following output and have an
 instance named "webserver" running in your tenant now.
 
@@ -122,7 +121,7 @@ localhost                  : ok=1    changed=1    unreachable=0    failed=0
 
 ```
 
-Note that the `nova_compute` module is idempotent.  Running this
+Note that the `os_server` module is idempotent.  Running this
 playbook multiple times will not launch multiple instances.  Also note
 that the instance can be terminated by changing the "state" attribute
 from "present" to "absent" and running the playbook.
@@ -138,32 +137,37 @@ can't add it to the inventory before we run the playbook.  The example
 follows.
 
 ```
+---
 - name: Deploy on OpenStack
   hosts: localhost
   gather_facts: false
   tasks:
   - name: Deploy an instance
-    nova_compute:
+    os_server:
       state: present
-      login_username: demo
-      login_password: secret
-      login_tenant_name: demo
-      auth_url: http://127.0.0.1:5000/v2.0/
       name: webserver
-      image_name: centos-7-x86_64-genericcloud
+      image: centos-7-x86_64-genericcloud
       key_name: root
-      wait_for: 200
-      flavor_id: 2
+      wait: yes
+      flavor: m1.small
       auto_floating_ip: yes
-      nics:
-        - net-id: fa6af4e6-c44e-439c-a91c-03bcae55e587
+      network: private
       meta:
         hostname: webserver.localdomain
-    register: nova
+    register: webserver
 
+  - name: Wait for SSH on the Instance
+    command: >
+      ssh -oBatchMode=yes -oStrictHostKeyChecking=no
+      centos@{{webserver.server.public_v4}} true
+    register: result
+    until: result|success
+    retries: 30
+    delay: 10
+  
   - name: Add CentOS Instance to Inventory
     add_host: name=webserver groups=webservers
-              ansible_ssh_host={{ nova.public_ip[0] }} 
+              ansible_ssh_host={{ webserver.server.public_v4 }} 
   
 - hosts: webservers
   remote_user: centos
@@ -175,12 +179,13 @@ follows.
       service: name=httpd state=running
 ```
 
-Once again, modify the attributes in the `nova_compute` task to match
+Once again, modify the attributes in the `os_server` task to match
 your environment.  These task is the same as the one we used in the
 last section, except that we're now registering the output of the task
 so that we can access the floating IP address of the instance as a
-variable.  The second task in the "Deploy on OpenStack" play is where
-we dynamically add the host to the inventory.
+variable.  We add the host to our in-memory inventory in the third
+task. We've also added a second task which waits until SSH is
+available on the host for us to continue playbook execution.
 
 The last play in the playbook is the same the play that we started the
 tutorial with.  It installs and starts apache on all of the
@@ -188,6 +193,7 @@ webservers, which now includes the instance that we provisioned on
 OpenStack.  Run this example the same way as the last one:
 
 ```
+$ . ./openrc.sh
 $ ansible-playbook openstack_webserver.yaml
 ```
 

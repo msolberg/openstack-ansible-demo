@@ -1,7 +1,7 @@
 ---
 - hosts: webservers
   remote_user: centos
-  sudo: yes
+  become: yes
   tasks:
     - name: ensure apache is at the latest version
       yum: name=httpd state=latest
