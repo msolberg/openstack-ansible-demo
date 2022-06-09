@@ -1,0 +1,13 @@
+- hosts: localhost
+  collections:
+    - openstack.cloud
+  
+  tasks:
+  # Show all available Openstack images
+  - name: Retrieve all available Openstack images
+    openstack.cloud.image_info:
+    register: result
+
+  - name: Show images
+    debug:
+      msg: "{{ result.openstack_image }}"
