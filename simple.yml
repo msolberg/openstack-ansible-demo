@@ -3,39 +3,39 @@
   hosts: localhost
   gather_facts: False
   vars:
-    instance_name: centos
-    os_keystone_url: http://127.0.0.1:5000/v2.0/
-    os_username: demo
-    os_password: secret
-    os_tenant: demo
-    os_network_id: 515c7188-1091-4d9e-a43b-ab2c6a4401a6
-    os_flavor_id: 2
-    os_key_name: demo
+    instance_name: cirros
+    auth:
+      auth_url: http://127.0.0.1:5000/v2.0/
+      username: demo
+      password: secret
+      project_name: demo
+      user_domain_name: Default
+    image_name: cirros-0.5.1-x86_64
+    network_id: 515c7188-1091-4d9e-a43b-ab2c6a4401a6
+    flavor_name: small
+    key_name: demo
   
   tasks:
-  - name: Launch CentOS Instance
-    nova_compute:
+  - name: Launch CirrOS Instance
+    openstack.cloud.server:
       state: present
-      auth_url: "{{ os_keystone_url }}"
-      login_username: "{{ os_username }}"
-      login_password: "{{ os_password }}"
-      login_tenant_name: "{{ os_tenant }}"
+      auth: "{{ auth }}"
       name: "{{ instance_name }}"
-      image_name: centos-7-x86_64-genericcloud
-      key_name: "{{ os_key_name }}"
-      wait_for: 200
-      flavor_id: "{{ os_flavor_id }}"
+      image: "{{ image_name }}"
+      key_name: "{{ key_name }}"
+      timeout: 200
+      flavor: "{{ flavor_name }}"
       nics:
-        - net-id: "{{ os_network_id }}"
+        - net-id: "{{ network_id }}"
       meta:
         hostname: "{{ instance_name }}.openstacklocal"
-    register: nova
+    register: instance
   
   - name: Wait for Host to be Available
-    wait_for: host={{ nova.private_ip }} port=22 delay=10
+    wait_for: host={{ instance.private_ip }} port=22 delay=10
   
   - name: Add CentOS Instance to Inventory
-    add_host: name="{{ instance_name }}" ansible_ssh_user=centos
+    add_host: name="{{ instance_name }}" ansible_ssh_user=cirros
               ansible_ssh_host={{ nova.private_ip }} 
               ansible_sudo
 
