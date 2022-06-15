@@ -35,16 +35,3 @@
     debug:
       var: instance
     
-  - name: Wait for Host to be Available
-    wait_for: host={{ instance.private_ip }} port=22 delay=10
-  
-  - name: Add CentOS Instance to Inventory
-    add_host: name="{{ instance_name }}" ansible_ssh_user=cirros
-              ansible_ssh_host={{ nova.private_ip }} 
-              ansible_sudo
-
-- name: Ping new host
-  hosts: "{{ instance_name }}"
-  
-  tasks:
-  - ping:
