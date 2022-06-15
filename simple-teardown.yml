@@ -11,7 +11,7 @@
   
   tasks:
   - name: Terminate CirrOS Instance
-    nova_compute:
+    openstack.cloud.server:
       state: absent
       name: "{{ instance_name }}" 
       wait_for: 200
