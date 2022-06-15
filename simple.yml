@@ -30,7 +30,11 @@
       meta:
         hostname: "{{ instance_name }}.openstacklocal"
     register: instance
-  
+
+  - name: Print instance information
+    debug:
+      var: instance
+    
   - name: Wait for Host to be Available
     wait_for: host={{ instance.private_ip }} port=22 delay=10
   
