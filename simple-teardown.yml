@@ -3,28 +3,15 @@
   hosts: localhost
   gather_facts: False
   vars:
-    os_keystone_url: http://127.0.0.1:5000/v2.0/
-    os_username: demo
-    os_password: secret
-    os_tenant: demo
-    os_network_id: 515c7188-1091-4d9e-a43b-ab2c6a4401a6
-    os_flavor_id: 2
-    os_key_name: demo
+    instance_name: cirros
+    image_name: cirros-0.5.1-x86_64
+    network_id: 515c7188-1091-4d9e-a43b-ab2c6a4401a6
+    flavor_name: small
+    key_name: demo
   
   tasks:
-  - name: Terminate CentOS Instance
+  - name: Terminate CirrOS Instance
     nova_compute:
       state: absent
-      auth_url: "{{ os_keystone_url }}"
-      login_username: "{{ os_username }}"
-      login_password: "{{ os_password }}"
-      login_tenant_name: "{{ os_tenant }}"
-      name: centos 
-      image_name: centos-7-x86_64-genericcloud
-      key_name: "{{ os_key_name }}"
+      name: "{{ instance_name }}" 
       wait_for: 200
-      flavor_id: "{{ os_flavor_id }}"
-      nics:
-        - net-id: "{{ os_network_id }}"
-      meta:
-        hostname: centos.openstacklocal
