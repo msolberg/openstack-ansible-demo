@@ -4,12 +4,6 @@
   gather_facts: False
   vars:
     instance_name: cirros
-    auth:
-      auth_url: http://127.0.0.1:5000/v2.0/
-      username: demo
-      password: secret
-      project_name: demo
-      user_domain_name: Default
     image_name: cirros-0.5.1-x86_64
     network_id: 515c7188-1091-4d9e-a43b-ab2c6a4401a6
     flavor_name: small
@@ -19,7 +13,6 @@
   - name: Launch CirrOS Instance
     openstack.cloud.server:
       state: present
-      #auth: "{{ auth }}"
       name: "{{ instance_name }}"
       image: "{{ image_name }}"
       key_name: "{{ key_name }}"
