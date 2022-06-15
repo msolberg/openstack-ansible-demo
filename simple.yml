@@ -19,7 +19,7 @@
   - name: Launch CirrOS Instance
     openstack.cloud.server:
       state: present
-      auth: "{{ auth }}"
+      #auth: "{{ auth }}"
       name: "{{ instance_name }}"
       image: "{{ image_name }}"
       key_name: "{{ key_name }}"
