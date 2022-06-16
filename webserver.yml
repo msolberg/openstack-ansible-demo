@@ -1,6 +1,6 @@
 ---
 - name: Deploy and configure a webserver
-  hosts: webservers
+  hosts: meta-group_webservers
   gather_facts: true
   vars:
     package_name: httpd
