@@ -10,7 +10,7 @@
     key_name: demo
   
   tasks:
-  - name: Terminate CirrOS Instance
+  - name: Terminate OpenStack Instance
     openstack.cloud.server:
       state: absent
       name: "{{ instance_name }}" 

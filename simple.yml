@@ -10,7 +10,7 @@
     key_name: demo
   
   tasks:
-  - name: Launch CirrOS Instance
+  - name: Launch OpenStack Instance
     openstack.cloud.server:
       state: present
       name: "{{ instance_name }}"
