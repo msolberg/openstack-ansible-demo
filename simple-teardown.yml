@@ -14,4 +14,4 @@
     openstack.cloud.server:
       state: absent
       name: "{{ instance_name }}" 
-      timeout: 200
+      timeout: 300
