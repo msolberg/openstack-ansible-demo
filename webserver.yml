@@ -1,0 +1,20 @@
+---
+- name: Deploy and configure a webserver
+  hosts: webservers
+  gather_facts: true
+  vars:
+    package_name: httpd
+    service_name: httpd
+
+  tasks:
+  - name: Install Package
+    yum:
+      name: "{{ package_name }}"
+      state: present
+
+  - name: Enable Service
+    service:
+      name: "{{ service_name }}"
+      state: enabled
+
+      
