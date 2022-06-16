@@ -8,6 +8,7 @@
     network_id: 515c7188-1091-4d9e-a43b-ab2c6a4401a6
     flavor_name: small
     key_name: demo
+    group: webservers
   
   tasks:
   - name: Launch OpenStack Instance
@@ -22,6 +23,7 @@
         - net-id: "{{ network_id }}"
       meta:
         hostname: "{{ instance_name }}.openstacklocal"
+        group: "{{ group_name }}"
     register: instance
 
   - name: Print instance information
