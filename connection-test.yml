@@ -3,11 +3,42 @@
     - openstack.cloud
   
   tasks:
-  # Show all available Openstack images
-  - name: Retrieve all available Openstack images
+  # Show all available OpenStack images
+  - name: Retrieve all available OpenStack images
     openstack.cloud.image_info:
-    register: result
-
+    register: images
+  
   - name: Show images
     debug:
-      msg: "{{ result.openstack_image }}"
+      msg: "{{ item.name }}"
+    with_items: "{{ images.openstack_image }}"
+  
+  # Show all available OpenStack flavors
+  - name: Retrieve all available OpenStack flavors
+    openstack.cloud.compute_flavor_info:
+    register: flavors
+  
+  - name: Show flavors
+    debug:
+      msg: "{{ item.name }}"
+    with_items: "{{ flavors.openstack_flavors }}"
+  
+  # Show all available OpenStack keypairs 
+  - name: Retrieve all available OpenStack keypairs
+    openstack.cloud.keypair_info:
+    register: keypairs
+  
+  - name: Show keypairs
+    debug:
+      msg: "{{ item.name }}"
+    with_items: "{{ keypairs.openstack_keypairs }}"
+  
+  # Show all running OpenStack instances
+  - name: Retrieve all available OpenStack instances
+    openstack.cloud.server_info:
+    register: servers
+  
+  - name: Show instances
+    debug:
+      msg: "{{ item.name }}"
+    with_items: "{{ servers.openstack_servers }}"
